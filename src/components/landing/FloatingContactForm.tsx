@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,6 +16,8 @@ interface FormData {
   message: string;
 }
 
+const COOKIE_NAME = "contact_form_hidden";
+
 const FloatingContactForm = ({
   onSubmit,
   isOpen = true,
@@ -26,6 +28,15 @@ const FloatingContactForm = ({
     email: "",
     message: "",
   });
+
+  useEffect(() => {
+    const isHidden = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(COOKIE_NAME));
+    if (isHidden) {
+      setIsExpanded(false);
+    }
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,10 +50,17 @@ const FloatingContactForm = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleHide = () => {
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + 7); // Cookie expires in 7 days
+    document.cookie = `${COOKIE_NAME}=true; expires=${expiryDate.toUTCString()}; path=/`;
+    setIsExpanded(false);
+  };
+
   if (!isExpanded) {
     return (
       <Button
-        className="fixed bottom-4 right-4 rounded-full p-4 bg-blue-600 hover:bg-blue-700 text-white"
+        className="fixed bottom-4 right-4 rounded-full p-4 bg-blue-600 hover:bg-blue-700 text-white z-50"
         onClick={() => setIsExpanded(true)}
       >
         <MessageSquare className="h-6 w-6" />
@@ -57,7 +75,7 @@ const FloatingContactForm = ({
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => setIsExpanded(false)}
+          onClick={handleHide}
           className="h-8 w-8"
         >
           <X className="h-4 w-4" />

@@ -2,6 +2,7 @@ import React from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
+import useEmblaCarousel from "embla-carousel-react";
 
 interface Testimonial {
   id: number;
@@ -20,7 +21,7 @@ const defaultTestimonials: Testimonial[] = [
   {
     id: 1,
     name: "Sarah Johnson",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sarah",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=happy",
     rating: 5,
     text: "The tutoring sessions have been transformative for my learning experience. Highly recommended!",
     role: "Math Student",
@@ -28,7 +29,7 @@ const defaultTestimonials: Testimonial[] = [
   {
     id: 2,
     name: "Michael Chen",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=michael",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=85455",
     rating: 5,
     text: "Exceptional teaching methods and very patient approach. Saw improvement in my grades within weeks.",
     role: "Science Student",
@@ -36,7 +37,7 @@ const defaultTestimonials: Testimonial[] = [
   {
     id: 3,
     name: "Emily Davis",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=emily",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=qwert",
     rating: 5,
     text: "The personalized attention and structured learning plan made all the difference in my studies.",
     role: "English Student",
@@ -44,7 +45,7 @@ const defaultTestimonials: Testimonial[] = [
   {
     id: 4,
     name: "James Wilson",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=james",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=alp",
     rating: 5,
     text: "Outstanding support and guidance. Really helped me build confidence in my abilities.",
     role: "Physics Student",
@@ -54,39 +55,48 @@ const defaultTestimonials: Testimonial[] = [
 const TestimonialsCarousel = ({
   testimonials = defaultTestimonials,
 }: TestimonialsCarouselProps) => {
-  const [currentIndex, setCurrentIndex] = React.useState(0);
-  const [slidesToShow, setSlidesToShow] = React.useState(3);
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "start",
+    loop: false,
+    skipSnaps: false,
+    dragFree: false,
+  });
+
+  const [prevBtnEnabled, setPrevBtnEnabled] = React.useState(false);
+  const [nextBtnEnabled, setNextBtnEnabled] = React.useState(false);
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([]);
+
+  const scrollPrev = React.useCallback(
+    () => emblaApi && emblaApi.scrollPrev({ jump: true }),
+    [emblaApi],
+  );
+
+  const scrollNext = React.useCallback(
+    () => emblaApi && emblaApi.scrollNext({ jump: true }),
+    [emblaApi],
+  );
+
+  const scrollTo = React.useCallback(
+    (index: number) => emblaApi && emblaApi.scrollTo(index, true),
+    [emblaApi],
+  );
+
+  const onSelect = React.useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+    setPrevBtnEnabled(emblaApi.canScrollPrev());
+    setNextBtnEnabled(emblaApi.canScrollNext());
+  }, [emblaApi]);
 
   React.useEffect(() => {
-    const handleResize = () => {
-      setSlidesToShow(
-        window.innerWidth < 768 ? 1 : window.innerWidth < 1024 ? 2 : 3,
-      );
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const nextSlide = () => {
-    setCurrentIndex((prevIndex) => {
-      const nextIndex = prevIndex + slidesToShow;
-      return nextIndex >= testimonials.length ? 0 : prevIndex + 1;
-    });
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prevIndex) => {
-      return prevIndex === 0
-        ? Math.max(0, testimonials.length - slidesToShow)
-        : prevIndex - 1;
-    });
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index * slidesToShow);
-  };
+    if (!emblaApi) return;
+    setScrollSnaps(emblaApi.scrollSnapList());
+    onSelect();
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
+    return () => emblaApi.destroy();
+  }, [emblaApi, onSelect]);
 
   const renderStars = (rating: number) => {
     return Array(5)
@@ -99,64 +109,53 @@ const TestimonialsCarousel = ({
       ));
   };
 
-  const visibleTestimonials = testimonials.slice(
-    currentIndex,
-    currentIndex + slidesToShow,
-  );
-  const totalSlides = Math.ceil((testimonials.length - slidesToShow + 1) / 1);
-
   return (
-    <div className="w-full bg-white py-16 px-4">
-      <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 px-12">
+    <div className="w-full bg-white py-16">
+      <div className="max-w-7xl mx-auto px-8">
+        <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
           What Our Students Say
         </h2>
 
-        <div className="relative overflow-hidden">
-          <div
-            className="flex gap-6 transition-all duration-300 ease-in-out"
-            style={{
-              transform: `translateX(-${currentIndex * (100 / slidesToShow)}%) translateX(48px)`,
-              width: `${(testimonials.length * 100) / slidesToShow}%`,
-            }}
-          >
-            {testimonials.map((testimonial) => (
-              <div
-                key={testimonial.id}
-                className="flex-shrink-0"
-                style={{ width: `${100 / slidesToShow}%` }}
-              >
-                <Card className="mx-3 p-6 shadow-lg h-full">
-                  <div className="flex items-center mb-4">
-                    <img
-                      src={testimonial.avatar}
-                      alt={testimonial.name}
-                      className="w-12 h-12 rounded-full mr-4"
-                    />
-                    <div>
-                      <h3 className="font-semibold text-lg">
-                        {testimonial.name}
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        {testimonial.role}
-                      </p>
+        <div className="relative">
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex">
+              {testimonials.map((testimonial) => (
+                <div
+                  key={testimonial.id}
+                  className="flex-[0_0_100%] min-w-0 pl-4 md:flex-[0_0_50%] lg:flex-[0_0_33.333%]"
+                >
+                  <Card className="mr-4 p-6 shadow-lg h-full">
+                    <div className="flex items-center mb-4">
+                      <img
+                        src={testimonial.avatar}
+                        alt={testimonial.name}
+                        className="w-12 h-12 rounded-full mr-4"
+                      />
+                      <div>
+                        <h3 className="font-semibold text-lg">
+                          {testimonial.name}
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          {testimonial.role}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex mb-4">
-                    {renderStars(testimonial.rating)}
-                  </div>
-                  <p className="text-gray-700">{testimonial.text}</p>
-                </Card>
-              </div>
-            ))}
+                    <div className="flex mb-4">
+                      {renderStars(testimonial.rating)}
+                    </div>
+                    <p className="text-gray-700">{testimonial.text}</p>
+                  </Card>
+                </div>
+              ))}
+            </div>
           </div>
 
           <Button
             variant="outline"
             size="icon"
-            className="absolute top-1/2 -translate-y-1/2 -translate-x-6 bg-white shadow-lg z-20 left-8"
-            onClick={prevSlide}
-            disabled={currentIndex === 0}
+            className="absolute top-1/2 -translate-y-1/2 -left-4 bg-white shadow-lg z-20"
+            onClick={scrollPrev}
+            disabled={!prevBtnEnabled}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -164,24 +163,23 @@ const TestimonialsCarousel = ({
           <Button
             variant="outline"
             size="icon"
-            className="absolute top-1/2 -translate-y-1/2 translate-x-6 bg-white shadow-lg z-20 right-8"
-            onClick={nextSlide}
-            disabled={currentIndex >= testimonials.length - slidesToShow}
+            className="absolute top-1/2 -translate-y-1/2 -right-4 bg-white shadow-lg z-20"
+            onClick={scrollNext}
+            disabled={!nextBtnEnabled}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
 
         <div className="flex justify-center mt-6 gap-2">
-          {Array(totalSlides)
-            .fill(0)
-            .map((_, index) => (
-              <button
-                key={index}
-                className={`w-2 h-2 rounded-full transition-all ${currentIndex === index * slidesToShow ? "bg-blue-600 w-4" : "bg-gray-300"}`}
-                onClick={() => goToSlide(index)}
-              />
-            ))}
+          {scrollSnaps.map((_, index) => (
+            <button
+              key={index}
+              className={`w-2 h-2 rounded-full transition-all ${selectedIndex === index ? "bg-blue-600 w-4" : "bg-gray-300"}`}
+              aria-label={`Go to slide ${index + 1}`}
+              onClick={() => scrollTo(index)}
+            />
+          ))}
         </div>
       </div>
     </div>
