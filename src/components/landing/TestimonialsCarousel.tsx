@@ -154,7 +154,7 @@ const TestimonialsCarousel = ({
           <Button
             variant="outline"
             size="icon"
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 bg-white shadow-lg z-20"
+            className="absolute top-1/2 -translate-y-1/2 -translate-x-6 bg-white shadow-lg z-20 left-8"
             onClick={prevSlide}
             disabled={currentIndex === 0}
           >
@@ -164,7 +164,7 @@ const TestimonialsCarousel = ({
           <Button
             variant="outline"
             size="icon"
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 bg-white shadow-lg z-20"
+            className="absolute top-1/2 -translate-y-1/2 translate-x-6 bg-white shadow-lg z-20 right-8"
             onClick={nextSlide}
             disabled={currentIndex >= testimonials.length - slidesToShow}
           >
