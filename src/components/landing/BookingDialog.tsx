@@ -165,7 +165,6 @@ export function BookingDialog({ open, onOpenChange }: BookingDialogProps) {
 
   const getTimeSlots = React.useCallback((date: Date): TimeSlot[] => {
     const dateKey = format(date, "yyyy-MM-dd");
-    console.log(dateKey);
     const daySlots = bookedAndUnavailableSlots[dateKey] || [];
 
     return availableSlots.map((defaultSlot) => {
@@ -217,11 +216,11 @@ export function BookingDialog({ open, onOpenChange }: BookingDialogProps) {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-4 max-sm:grid grid-cols-2 max-sm:gap-4">
             <Button type="button" variant="outline" onClick={prevMonth}>
               Previous Month
             </Button>
-            <h3 className="text-lg font-semibold">
+            <h3 className="text-lg font-semibold max-sm:order-1 text-center col-span-2">
               {format(currentMonth, "MMMM yyyy")}
             </h3>
             <Button type="button" variant="outline" onClick={nextMonth}>
@@ -229,7 +228,7 @@ export function BookingDialog({ open, onOpenChange }: BookingDialogProps) {
             </Button>
           </div>
 
-          <div className="grid grid-cols-7 gap-4">
+          <div className="grid md:grid-cols-7 grid-cols-1 gap-4">
             {days.map((day) => {
               const isPast = isBefore(day, new Date()) && !isToday(day);
               const daySlots = getTimeSlots(day);
@@ -250,9 +249,9 @@ export function BookingDialog({ open, onOpenChange }: BookingDialogProps) {
                   )}
                 >
                   <div className="text-sm font-medium mb-2">
-                    {format(day, "E, MMM d")}
+                    {format(day, "E, d")}
                   </div>
-                  <div className="space-y-1">
+                  <div className="grid grid-cols-1 md:grid-cols-1 sm:grid-cols-3 gap-1">
                     {daySlots.map((slot) => (
                       <TimeSlotButton
                         key={slot.time}
@@ -295,7 +294,7 @@ export function BookingDialog({ open, onOpenChange }: BookingDialogProps) {
             className="min-h-[100px]"
           />
 
-          <div className="flex items-center justify-between pt-4">
+          <div className="flex items-center justify-between pt-4 max-sm:flex-col gap-4">
             <div className="flex gap-2 text-sm">
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 bg-gray-100 border border-gray-300 rounded-sm" />
