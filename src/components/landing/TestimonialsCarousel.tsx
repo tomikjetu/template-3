@@ -85,13 +85,13 @@ const TestimonialsCarousel = ({
   const onSelect = React.useCallback(() => {
     if (!emblaApi) return;
     setSelectedIndex(emblaApi.selectedScrollSnap());
+    setScrollSnaps(emblaApi.scrollSnapList());
     setPrevBtnEnabled(emblaApi.canScrollPrev());
     setNextBtnEnabled(emblaApi.canScrollNext());
   }, [emblaApi]);
 
   React.useEffect(() => {
     if (!emblaApi) return;
-    setScrollSnaps(emblaApi.scrollSnapList());
     onSelect();
     emblaApi.on("select", onSelect);
     emblaApi.on("reInit", onSelect);
