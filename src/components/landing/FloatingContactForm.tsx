@@ -72,7 +72,7 @@ const FloatingContactForm = ({
 
   return (
     <>
-      <Card className="fixed bottom-4 right-4 w-[400px] p-6 bg-white shadow-lg rounded-lg z-50">
+      <Card className="fixed bottom-4 right-4 md:w-[400px] w-[300px] p-6 bg-white shadow-lg rounded-lg z-50">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">Contact Me</h3>
           <Button
