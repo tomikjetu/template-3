@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  app:
+    image: node:20.18.0
+    container_name: demo-template-1
+    working_dir: /app
+    ports:
+      - "4173:4173"  # Adjust the port if your app uses a different one
+    volumes:
+      - .:/app
+    environment:
+    command: npm start
+
+volumes:
+  node_modules:

@@ -16,6 +16,10 @@ export default defineConfig({
   optimizeDeps: {
     entries: ["src/main.tsx", "src/tempobook/**/*"],
   },
+  server: {
+    host: '0.0.0.0', // Bind to all network interfaces
+    port: 4173,      // Use the same port as your Docker mapping
+  },
   plugins: [
     react({
       plugins: conditionalPlugins,
