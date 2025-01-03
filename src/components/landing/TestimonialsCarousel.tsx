@@ -68,12 +68,12 @@ const TestimonialsCarousel = ({
   const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([]);
 
   const scrollPrev = React.useCallback(
-    () => emblaApi && emblaApi.scrollPrev({ jump: true }),
+    () => emblaApi && emblaApi.scrollPrev(true),
     [emblaApi],
   );
 
   const scrollNext = React.useCallback(
-    () => emblaApi && emblaApi.scrollNext({ jump: true }),
+    () => emblaApi && emblaApi.scrollNext(true),
     [emblaApi],
   );
 
