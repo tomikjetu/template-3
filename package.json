@@ -10,8 +10,8 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "types:supabase": "npx supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > src/types/supabase.ts",
-    "docker:build": "docker build -t ghcr.io/tomikjetu/demo-template-1 .",
-    "docker:run": "docker run -d -p 4173:4173 ghcr.io/tomikjetu/demo-template-1"
+    "docker:build": "docker build -t ghcr.io/tomikjetu/demo-template-3 .",
+    "docker:run": "docker run -d -p 4173:4173 ghcr.io/tomikjetu/demo-template-3"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.6.0",
